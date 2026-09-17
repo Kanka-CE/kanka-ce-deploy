@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.NIGHTLY_PUSH_TOKEN }}
+          token: ${{ secrets.WORKFLOWS }}
 
       - name: Configure Git identity
         run: |
