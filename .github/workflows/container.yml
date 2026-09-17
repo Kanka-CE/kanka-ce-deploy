@@ -2,6 +2,12 @@ name: Build and Release Container
 
 on:
   workflow_dispatch:
+      inputs:
+        version:
+          description: Image version to publish
+          required: true
+          type: string
+          
   repository_dispatch:
     types: [ce-release-published]
     
@@ -28,22 +34,37 @@ jobs:
           ./build-container.sh
 
       - name: Repository owner 
-        run: echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+        env:
+          EVENT_VERSION: ${{ github.event.client_payload.version }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          OWNER="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          VERSION="${EVENT_VERSION:-$INPUT_VERSION}"
 
+          if [ -z "$VERSION" ]; then
+            echo "No image version was provided."
+            echo "For repository_dispatch, set client_payload.version."
+            echo "For workflow_dispatch, provide the version input."
+            exit 1
+          fi
+
+          echo "OWNER=$OWNER" >> "$GITHUB_ENV"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          
       - name: Tag image for GHCR
         run: |
           # version number
           podman tag kanka-ce:latest \
-            ghcr.io/${{ env.OWNER }}/kanka-ce:${{ github.event.client_payload.version }}
+            "ghcr.io/${OWNER}/kanka-ce:${VERSION}"
 
           # latest
-            podman tag kanka-ce:latest \
-              ghcr.io/${{ env.OWNER }}/kanka-ce:latest
+          podman tag kanka-ce:latest \
+            "ghcr.io/${OWNER}/kanka-ce:latest"
 
       - name: Push image
         run: |
           # version number
-          podman push ghcr.io/${{ env.OWNER }}/kanka-ce:${{ github.event.client_payload.version }}
+          podman push "ghcr.io/${OWNER}/kanka-ce:${VERSION}"
 
           # latest
-          podman push ghcr.io/${{ env.OWNER }}/kanka-ce:latest
+          podman push "ghcr.io/${OWNER}/kanka-ce:latest"
