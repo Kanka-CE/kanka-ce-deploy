@@ -128,13 +128,16 @@ fi
 
 # -- Clean up --
 cecho ${INFO} "Delete unused files:"
-git rm -rf   \
-    .claude  \
-    .github  \
-    .mariadb \
-    .nginx   \
-    docker   \
-    docs     \
+git rm -rf    \
+    .agents   \
+    .codex    \
+    .claude   \
+    .github   \
+    .opencode \
+    .mariadb  \
+    .nginx    \
+    docker    \
+    docs      \
     public/vendor/fontawesome
 git rm -f \
     .editorconfig      \
@@ -143,6 +146,7 @@ git rm -f \
     .gitattributes     \
     .gitignore         \
     .jshintrc          \
+    AGENTS.md          \
     boost.json         \
     CLAUDE.md          \
     docker-compose.yml
