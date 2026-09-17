@@ -1,0 +1,31 @@
+From 56b081fd87dd0b1158f568334db0d885b909cd37 Mon Sep 17 00:00:00 2001
+From: Sebastian Kinnewig <Sebastian@Kinnewig.org>
+Date: Thu, 17 Sep 2026 15:44:42 +0200
+Subject: [PATCH] Set default email adress.
+
+---
+ config/backup.php | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/config/backup.php b/config/backup.php
+index 32a7e6fb6..a5139c42e 100644
+--- a/config/backup.php
++++ b/config/backup.php
+@@ -178,11 +178,11 @@ return [
+         'notifiable' => Notifiable::class,
+ 
+         'mail' => [
+-            'to' => env('APP_EMAIL'),
++            'to' => env('APP_EMAIL', 'admin@example.com'),
+ 
+             'from' => [
+-                'address' => env('MAIL_FROM_ADDRESS', env('APP_EMAIL')),
+-                'name' => env('MAIL_FROM_NAME'),
++                'address' => env('MAIL_FROM_ADDRESS', env('APP_EMAIL', 'admin@example.com')),
++                'name' => env('MAIL_FROM_NAME', 'admin@example.com'),
+             ],
+         ],
+ 
+-- 
+2.52.0
+
