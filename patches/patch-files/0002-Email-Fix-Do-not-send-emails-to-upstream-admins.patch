@@ -1,0 +1,123 @@
+From 2164d1f83012bd4c718c394a5bbd723b598fc464 Mon Sep 17 00:00:00 2001
+From: Sebastian Kinnewig <Sebastian@Kinnewig.org>
+Date: Sun, 4 Oct 2026 10:32:42 +0200
+Subject: [PATCH] Email-Fix: Do not send emails to upstream admins.
+
+---
+ app/Jobs/Emails/SubscriptionCancelEmailJob.php     |  6 +++---
+ app/Jobs/Emails/SubscriptionCreatedEmailJob.php    | 10 +++++-----
+ app/Jobs/Emails/SubscriptionDowngradedEmailJob.php |  5 +++--
+ app/Jobs/Emails/SubscriptionFailedEmailJob.php     |  2 +-
+ app/Jobs/Emails/Subscriptions/Converted.php        |  9 +++++----
+ app/Jobs/Emails/TrialAcceptedEmailJob.php          | 10 +++++-----
+ 6 files changed, 22 insertions(+), 20 deletions(-)
+
+diff --git a/app/Jobs/Emails/SubscriptionCancelEmailJob.php b/app/Jobs/Emails/SubscriptionCancelEmailJob.php
+index d25beed21..3a53f4c4d 100644
+--- a/app/Jobs/Emails/SubscriptionCancelEmailJob.php
++++ b/app/Jobs/Emails/SubscriptionCancelEmailJob.php
+@@ -43,9 +43,9 @@ class SubscriptionCancelEmailJob implements ShouldQueue
+             return;
+         }
+ 
+-        // Send an email to the admins
+-        Mail::to('hello@kanka.io')
+-            ->send(new CancelledSubscriptionMail($cancellation));
++        // Do not send emails to the upstream admins!
++        //Mail::to('hello@kanka.io')
++        //    ->send(new CancelledSubscriptionMail($cancellation));
+ 
+         // Send an email to the user
+         try {
+diff --git a/app/Jobs/Emails/SubscriptionCreatedEmailJob.php b/app/Jobs/Emails/SubscriptionCreatedEmailJob.php
+index db44d91f3..7f4edb32e 100644
+--- a/app/Jobs/Emails/SubscriptionCreatedEmailJob.php
++++ b/app/Jobs/Emails/SubscriptionCreatedEmailJob.php
+ @@ -59,11 +59,11 @@ public function handle()
+                 return;
+             }
+ 
+-            // Send an email to the admins
+-            Mail::to('hello@kanka.io')
+-                ->send(
+-                    new NewSubscriptionMail($user, $this->period)
+-                );
++            // Do not send emails to the upstream admins!
++            //Mail::to('hello@kanka.io')
++            //    ->send(
++            //        new NewSubscriptionMail($user, $this->period)
++            //    );
+         }
+     }
+ }
+diff --git a/app/Jobs/Emails/SubscriptionDowngradedEmailJob.php b/app/Jobs/Emails/SubscriptionDowngradedEmailJob.php
+index cf2398aa6..b311c3649 100644
+--- a/app/Jobs/Emails/SubscriptionDowngradedEmailJob.php
++++ b/app/Jobs/Emails/SubscriptionDowngradedEmailJob.php
+@@ -50,7 +50,8 @@ class SubscriptionDowngradedEmailJob implements ShouldQueue
+         $reason = $this->reason === 'custom' ? 'other' : $this->reason;
+         $newTier = $this->newTierId ? Tier::find($this->newTierId) : null;
+ 
+-        Mail::to('hello@kanka.io')
+-            ->send(new DowngradedSubscriptionMail($user, $reason, $this->custom, $newTier, $this->oldPledge));
++        // Do not send emails to the upstream admins!
++        //Mail::to('hello@kanka.io')
++        //    ->send(new DowngradedSubscriptionMail($user, $reason, $this->custom, $newTier, $this->oldPledge));
+     }
+ }
+diff --git a/app/Jobs/Emails/SubscriptionFailedEmailJob.php b/app/Jobs/Emails/SubscriptionFailedEmailJob.php
+index 113361077..82113705e 100644
+--- a/app/Jobs/Emails/SubscriptionFailedEmailJob.php
++++ b/app/Jobs/Emails/SubscriptionFailedEmailJob.php
+@@ -53,7 +53,7 @@ class SubscriptionFailedEmailJob implements ShouldQueue
+             'red'
+         ));
+ 
+-        // Send an email to the admins
++        // Do not send emails to the upstream admins!
+         /*Mail::to('hello@kanka.io')
+             ->send(
+                 new FailedSubscriptionMail($user)
+diff --git a/app/Jobs/Emails/Subscriptions/Converted.php b/app/Jobs/Emails/Subscriptions/Converted.php
+index 49cebdefb..e85d7a9f9 100644
+--- a/app/Jobs/Emails/Subscriptions/Converted.php
++++ b/app/Jobs/Emails/Subscriptions/Converted.php
+@@ -39,9 +39,10 @@ class Converted implements ShouldQueue
+         /** @var ?TierPrice $price */
+         $price = TierPrice::where('stripe_id', $price)->first();
+ 
+-        Mail::to('hello@kanka.io')
+-            ->send(
+-                new ConvertedMail($user, $price->period)
+-            );
++        // Do not send emails to the upstream admins!
++        //Mail::to('hello@kanka.io')
++        //    ->send(
++        //        new ConvertedMail($user, $price->period)
++        //    );
+     }
+ }
+diff --git a/app/Jobs/Emails/TrialAcceptedEmailJob.php b/app/Jobs/Emails/TrialAcceptedEmailJob.php
+index 303ccb0f4..d897c33b7 100644
+--- a/app/Jobs/Emails/TrialAcceptedEmailJob.php
++++ b/app/Jobs/Emails/TrialAcceptedEmailJob.php
+@@ -40,11 +40,11 @@ class TrialAcceptedEmailJob implements ShouldQueue
+             return;
+         }
+ 
+-        // Send an email to the admins
+-        Mail::to('hello@kanka.io')
+-            ->send(
+-                new NewTrialAcceptedMail($user)
+-            );
++        // Do not send emails to the upstream admins!
++        //Mail::to('hello@kanka.io')
++        //    ->send(
++        //        new NewTrialAcceptedMail($user)
++        //    );
+ 
+     }
+ }
+-- 
+2.55.0
+
