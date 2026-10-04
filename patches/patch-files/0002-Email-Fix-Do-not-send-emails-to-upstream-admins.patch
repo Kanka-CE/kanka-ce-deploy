@@ -30,13 +30,13 @@ index d25beed21..3a53f4c4d 100644
          // Send an email to the user
          try {
 diff --git a/app/Jobs/Emails/SubscriptionCreatedEmailJob.php b/app/Jobs/Emails/SubscriptionCreatedEmailJob.php
-index db44d91f3..7f4edb32e 100644
+index c866703aa..821d00331 100644
 --- a/app/Jobs/Emails/SubscriptionCreatedEmailJob.php
 +++ b/app/Jobs/Emails/SubscriptionCreatedEmailJob.php
- @@ -59,11 +59,11 @@ public function handle()
+@@ -59,11 +59,11 @@ public function handle()
                  return;
              }
- 
+
 -            // Send an email to the admins
 -            Mail::to('hello@kanka.io')
 -                ->send(
