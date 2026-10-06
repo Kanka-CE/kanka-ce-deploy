@@ -1,0 +1,25 @@
+From 05120b69dfa6981ac39746a7b8acf7c55dfbc1d5 Mon Sep 17 00:00:00 2001
+From: Sebastian Kinnewig <Sebastian@Kinnewig.org>
+Date: Tue, 6 Oct 2026 14:58:43 +0200
+Subject: [PATCH] Use timezone from environment.
+
+---
+ config/app.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/config/app.php b/config/app.php
+index 87d6833c2..c331eeb67 100644
+--- a/config/app.php
++++ b/config/app.php
+@@ -178,7 +178,7 @@ return [
+     |
+     */
+ 
+-    'timezone' => 'UTC',
++    'timezone' => env('TZ', 'UTC'),
+ 
+     /*
+     |--------------------------------------------------------------------------
+-- 
+2.52.0
+
