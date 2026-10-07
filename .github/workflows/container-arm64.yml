@@ -1,4 +1,4 @@
-name: Build and Release Container
+name: Build and Release Container ARM64
 
 on:
   workflow_call:
@@ -7,10 +7,10 @@ on:
           description: Image version to publish
           required: true
           type: string
-
+          
 jobs:
   package:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -26,7 +26,7 @@ jobs:
 
       - name: Run build script
         run: |
-          ./build-container.sh --branch main
+          ./build-container.sh --branch main-arm64
 
       - name: Repository owner 
         env:
@@ -50,9 +50,9 @@ jobs:
         run: |
           # version number
           podman tag kanka-ce:latest \
-            "ghcr.io/${OWNER}/kanka-ce:${VERSION}-amd64"
+            "ghcr.io/${OWNER}/kanka-ce:${VERSION}-arm64"
 
       - name: Push image
         run: |
           # version number
-          podman push "ghcr.io/${OWNER}/kanka-ce:${VERSION}-amd64"
+          podman push "ghcr.io/${OWNER}/kanka-ce:${VERSION}-arm64"
