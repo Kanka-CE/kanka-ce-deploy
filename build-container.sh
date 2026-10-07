@@ -74,13 +74,21 @@ parse_arguments() {
         echo "Kanka CE Tools, Version $(cat VERSION)"
         echo "Usage: $0 [options] --kanka-dir=</Path/to/kanka>"
         echo "  -h,           --help      Print this message"
-        echo "  -t            --target    Target Kanka version, that shall be used as base (default: latest)"
+        echo "  -m            --branch    Branch name of docker-kanka-ce that shall be used (default: main)"
+        echo "  -t            --target    Target Kanka version that shall be used as base (default: latest)"
         echo "  -b            --build     build folder"
         echo "  -i            --icons     Select which icon set to use, options <fontawesome-free|fontawesome-nonfree|lineawesome>, defaults to fontawesome-free"
         exit 0
       ;;
 
-      # tARGET VERSION
+      # BRANCH NAME
+      -m|--branch)
+        BRANCH_NAME="$2"
+        shift
+        shift
+        ;;
+
+      # TARGET VERSION
       -t|--target)
         TARGET_VERSION="$2"
         shift
@@ -108,13 +116,25 @@ parse_arguments() {
     esac
   done
 
+  # -- BRANCH NAME --
+  cecho ${INFO} "Branch Name:"
+  if [ -z "${BRANCH_NAME}" ]; then
+    BRANCH_NAME="main"
+    echo "  No branch name provided. Use the default branch name:"
+    echo "  ${BRANCH_NAME}"
+    echo "  If you want to specify another version"
+    echo "  use the -m <BRANCH_NAME> or --branch <BRANCH_NAME> option."
+  else 
+    echo "  ${BRANCH_NAME}"
+  fi
+
   # -- TARGET VERSION --
   cecho ${INFO} "Target Version:"
   if [ -z "${TARGET_VERSION}" ]; then
     TARGET_VERSION="latest"
     echo "  No target version provided. Use the default target version:"
     echo "  ${TARGET_VERSION}"
-    echo "  If you want to specify an other version"
+    echo "  If you want to specify another version"
     echo "  use the -t <VERSION> or --target <VERSION> option."
   else 
     echo "  ${TARGET_VERSION}"
@@ -127,7 +147,7 @@ parse_arguments() {
     BUILD_DIR="${TOOLS_ROOT}/build"
     echo "  No build directory was provided. Use the default build folder:"
     echo "  ${BUILD_DIR}"
-    echo "  If you want to specify an other path, provide a build directory"
+    echo "  If you want to specify another path, provide a build directory"
     echo "  use the -b <DIR> or --build <DIR> option."
   else 
     # Check the input argument of the install path and (if used) replace the tilde
@@ -137,7 +157,7 @@ parse_arguments() {
   fi
 
   # --- ICON SET ---
-  # If user provided icons is not set, use default 
+  # If user-provided icons is not set, use default 
   cecho ${INFO} "Icons to use:"
   if [ -z "${ICONS}" ]; then
     ICONS="fontawesome-free"
@@ -175,7 +195,11 @@ fi
 
 # Download the Dockerfile
 cecho ${INFO} "Download Dockerfile"
-git clone https://github.com/kanka-ce/docker-kanka-ce.git ${BUILD_DIR}
+git clone \
+  --branch "${BRANCH_NAME}" \
+  --single-branch \
+  https://github.com/kanka-ce/docker-kanka-ce.git \
+  "${BUILD_DIR}"
 
 # -- Build Container --
 cd ${BUILD_DIR}
@@ -190,7 +214,7 @@ else
   error "Neither 'podman' nor 'docker' is available on this system." 7
 fi  
 
-# Note that the publishing of the container is done via an GitHub action.
+# Note that the publishing of the container is done via a GitHub action.
 
 echo
 cecho ${GOOD} "All Done!"
