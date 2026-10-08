@@ -15,9 +15,11 @@ It contains everything needed to deploy it via Docker Compose, plus the patch se
 This repo does **not** contain the modified Kanka source itself, and does **not** build the container image — see the table at the bottom for where those live.
 
 
-## Quick Start Guide (Docker)
+## Quick Start Guide
 
 Self-hosting instructions are also available in the [Wiki](https://github.com/Kanka-CE/kanka-community-edition/wiki/Self%E2%80%90Hosting-Guide).
+
+If you want to use Quadlets/Podman instead of Docker, see [kanka-ce-deploy-quadlets](https://github.com/Kanka-CE/kanka-ce-deploy-quadlets)
 
 ### Preparation
 This guide assumes your server is already up and running, with a recent and
@@ -88,7 +90,7 @@ sudo dnf -y install podman podman-compose
 </details>
 
 ### Running Kanka-CE
-- Download the `docker-compose`, `.env.example`, and `gen-passwords.sh`, this can be simply done via:
+- Download the `docker-compose`, `.env.example`, and `gen-passwords.sh`, this can be done simply via:
 ```bash
 git clone https://github.com/Kanka-CE/kanka-ce-deploy.git
 ```
@@ -117,8 +119,8 @@ chown -R 1000:1000 ${KANKA_CE_DATA}
 docker compose up -d
 ```
 
-### Post installation
-You can access the web UI at <http://localhost:80> (or a different port, if you edited the `.env` file). 
+### Post-installation
+You can access the web UI at <http://localhost:80> (or a different port if you edited the `.env` file). 
 It's strongly recommended to set up a reverse proxy. 
 Here's an nginx config to start from — replace `{your-domain}.com` and `{ip-of-your-kanka-ce-host}`:
 
@@ -169,13 +171,6 @@ server {
 Premium isn't enabled by default (yet), so you need to enable it by hand for each world.
 
 
-### Known issues
-[Bug during account creation:](https://github.com/Kanka-CE/kanka-ce-deploy/issues/4) After creating your account, you are redirected to the error page 500. 
-
-**Temporary workaround:** Just reload the page, which will bring you back to the login page, where you can log in with the newly created account.
-
-
-
 ## Contributing
 Kanka Community Edition and Kanka CE Tools can only exist if the community helps build them.
 To get started, you can read the [CONTRIBUTING.md](https://github.com/Kanka-CE/kanka-ce-container/blob/main/CONTRIBUTING.md). 
@@ -192,6 +187,7 @@ If you want Kanka CE to grow, stay compatible, and remain self‑hostable,
 |---|---|
 | [kanka-community-edition](https://github.com/Kanka-CE/kanka-community-edition) | The patched Kanka source these patches produce |
 | [docker-kanka-ce](https://github.com/Kanka-CE/docker-kanka-ce) | The Dockerfile that builds the image this compose file runs |
+| [kanka-ce-deploy-quadlets](https://github.com/Kanka-CE/kanka-ce-deploy-quadlets) | Quadlets to run KankaCE via Podman |
 
 
 ## License
