@@ -167,9 +167,6 @@ server {
 
 </details>
 
-### Enable Premium for your world!
-Premium isn't enabled by default (yet), so you need to enable it by hand for each world.
-
 
 ## Contributing
 Kanka Community Edition and Kanka CE Tools can only exist if the community helps build them.
