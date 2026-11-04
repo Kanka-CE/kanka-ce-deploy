@@ -1,35 +1,32 @@
-From 497f136f0fa7b364964ff507d4dc748f0184eeab Mon Sep 17 00:00:00 2001
+From bbdfacb52116cbec856d1f0ecdb5feadd1083038 Mon Sep 17 00:00:00 2001
 From: Sebastian Kinnewig <Sebastian@Kinnewig.org>
-Date: Fri, 5 Jun 2026 15:07:15 +0200
-Subject: [PATCH] Enable Premium.
+Date: Wed, 4 Nov 2026 12:11:25 +0100
+Subject: [PATCH] Enable Premium
 
 ---
- app/Models/Concerns/UserBoosters.php | 41 +++-------------------------
- app/Models/User.php                  | 17 ++++--------
- 2 files changed, 10 insertions(+), 48 deletions(-)
+ app/Models/Concerns/UserBenefits.php    | 25 ++++---------------------
+ app/Models/User.php                     | 17 ++++++-----------
+ app/Services/Campaign/CreateService.php | 14 ++++++++++++++
+ 3 files changed, 24 insertions(+), 32 deletions(-)
 
-diff --git a/app/Models/Concerns/UserBoosters.php b/app/Models/Concerns/UserBoosters.php
-index 8b10376d9..08b1e8609 100644
---- a/app/Models/Concerns/UserBoosters.php
-+++ b/app/Models/Concerns/UserBoosters.php
-@@ -14,9 +14,8 @@ trait UserBoosters
-     /**
-      * Get available boosts for the user
+diff --git a/app/Models/Concerns/UserBenefits.php b/app/Models/Concerns/UserBenefits.php
+index 03b001059..95f4ebe02 100644
+--- a/app/Models/Concerns/UserBenefits.php
++++ b/app/Models/Concerns/UserBenefits.php
+@@ -15,7 +15,8 @@ trait UserBenefits
       */
--    public function availableBoosts(): int
--    {
--        return $this->maxBoosts() - $this->boosting();
-+    public function availableBoosts(): int {
-+        return 100;
+     public function availableBenefits(): int
+     {
+-        return $this->maxBenefits() - $this->boosting();
++        // do not decrease the number of available benefits
++        return $this->maxBenefits();
      }
  
      /**
-@@ -34,39 +33,7 @@ public function boosting(): int
-     /**
-      * Get max number of boosts a user can give
+@@ -35,25 +36,7 @@ public function boosting(): int
       */
--    public function maxBoosts(): int
--    {
+     public function maxBenefits(): int
+     {
 -        // Allows admins to give boosters to members of the community
 -        $base = 0;
 -        if (! empty($this->booster_count)) {
@@ -41,36 +38,24 @@ index 8b10376d9..08b1e8609 100644
 -        }
 -
 -        if ($this->hasRole('admin')) {
--            return max(3, $base);
+-            return max(config('limits.benefits.admin'), $base);
 -        }
 -
--        $levels = [
--            Pledge::KOBOLD => 0,
--            Pledge::GOBLIN => 0,
--            Pledge::OWLBEAR => 1,
--            Pledge::WYVERN => 3,
--            Pledge::ELEMENTAL => 7,
--        ];
--        if ($this->hasBoosterNomenclature()) {
--            $levels = [
--                Pledge::KOBOLD => 0,
--                Pledge::GOBLIN => 1,
--                Pledge::OWLBEAR => 3,
--                Pledge::WYVERN => 6,
--                Pledge::ELEMENTAL => 10,
--            ];
+-        $levels = config('limits.benefits.standard');
+-        if ($this->hasLegacyBoosterNomenclature()) {
+-            $levels = config('limits.benefits.legacy');
 -        }
 -
 -        return Arr::get($levels, $this->pledge ?? 'unknown', 0) + $base;
-+    public function maxBoosts(): int {
-+        return 100;
++        // Hardcode `100` available benefits.
++        RETURN 100;
      }
  }
 diff --git a/app/Models/User.php b/app/Models/User.php
-index ea4ec96bf..0fe2ce772 100644
+index 995eef8b8..ac0e21081 100644
 --- a/app/Models/User.php
 +++ b/app/Models/User.php
-@@ -132,9 +132,8 @@ public function hasCampaignRole(int $roleId): bool
+@@ -142,9 +142,8 @@ public function hasCampaignRole(int $roleId): bool
      /**
       * Determine if a user is a subscriber
       */
@@ -82,7 +67,7 @@ index ea4ec96bf..0fe2ce772 100644
      }
  
      /**
-@@ -156,9 +155,8 @@ public function isGoblin(): bool
+@@ -166,9 +165,8 @@ public function isGoblin(): bool
      /**
       * Determine if a user is an elemental
       */
@@ -94,7 +79,7 @@ index ea4ec96bf..0fe2ce772 100644
      }
  
      public function isOwlbear(): bool
-@@ -428,11 +426,8 @@ public function hasPayPal(): bool
+@@ -398,11 +396,8 @@ public function hasPayPal(): bool
      /**
       * Check if the user is subscribed via a manual sub
       */
@@ -108,6 +93,38 @@ index ea4ec96bf..0fe2ce772 100644
      }
  
      /**
+diff --git a/app/Services/Campaign/CreateService.php b/app/Services/Campaign/CreateService.php
+index 4f8f3a954..29313c512 100644
+--- a/app/Services/Campaign/CreateService.php
++++ b/app/Services/Campaign/CreateService.php
+@@ -15,6 +15,7 @@
+ use App\Models\EntityType;
+ use App\Notifications\Header;
+ use App\Services\Users\CampaignService;
++use App\Services\Campaign\BoostService;
+ use App\Traits\RequestAware;
+ use App\Traits\UserAware;
+ use Exception;
+@@ -63,6 +64,19 @@ public function create(): Campaign
+             throw $e;
+         }
+ 
++        // Always enable premium for newly created campaigns:
++        try {
++            $boostService = app(BoostService::class);
++
++            $boostService
++                ->user($this->user)
++                ->campaign($this->campaign)
++                ->premium(automaticallyAssigned: true);
++        } catch (\Throwable $e) {
++            // Never fail campaign creation because of the boost
++            report($e);
++        }
++
+         return $this->campaign;
+     }
+ 
 -- 
-2.54.0
+2.52.0
 
