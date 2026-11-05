@@ -131,7 +131,6 @@ cecho ${INFO} "Delete unused files:"
 git rm -rf    \
     .agents   \
     .codex    \
-    .claude   \
     .github   \
     .opencode \
     .mariadb  \
@@ -148,7 +147,6 @@ git rm -f \
     .jshintrc          \
     AGENTS.md          \
     boost.json         \
-    CLAUDE.md          \
     docker-compose.yml
 git commit -m "Delete unused files."
 
@@ -157,7 +155,7 @@ cat << EOF >> .gitignore
 
 # --- Kanka-CE ignores ---
 # Kanka-CE-Tools
-# During patching the the tools are downloaded
+# During patching, the tools are downloaded
 # into the source folder, let git ignore them:
 ${TOOLS_ROOT}
 EOF
